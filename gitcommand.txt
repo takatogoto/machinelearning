@@ -1,18 +1,23 @@
 
-$ git checkout master
-$ git pull origin master
+git checkout master
+git pull origin master
 
 
-$ git status
+git status
 
-$ git add xxxx.py
-$ git commit -m "any comment"
-$ git push origin master
+git add xxxx.py
+git commit -m "any comment"
+git push origin master
 
 
 
 
 *** open new repo ***
+"""
+Click 'New repogitory' @ github.com and creat repo as you like
+Then click 'Clone or download'
+Check 'https://github.com/xxxx/xxxx.git'
+"""
 
 mkdir newfolder
 cd newfolder
@@ -20,10 +25,9 @@ git init
 vi .gitignore
 git config --list
 
-
 git remote add origin https://github.com/xxx/xxx.git
-
 # git remote add origin https://github.com/takatogoto/machinelearning.git
+
 
 
 *** remove file ***
