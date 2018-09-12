@@ -14,6 +14,8 @@ $ git push origin master
 
 *** open new repo ***
 
+mkdir newfolder
+cd newfolder
 git init
 vi .gitignore
 git config --list
@@ -22,3 +24,9 @@ git config --list
 git remote add origin https://github.com/xxx/xxx.git
 
 # git remote add origin https://github.com/takatogoto/machinelearning.git
+
+
+*** remove file ***
+git rm xxx.py
+git commit -m "any comment"
+git push origin master
