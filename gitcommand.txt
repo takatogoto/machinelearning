@@ -1,0 +1,24 @@
+
+$ git checkout master
+$ git pull origin master
+
+
+$ git status
+
+$ git add xxxx.py
+$ git commit -m "any comment"
+$ git push origin master
+
+
+
+
+*** open new repo ***
+
+git init
+vi .gitignore
+git config --list
+
+
+git remote add origin https://github.com/xxx/xxx.git
+
+# git remote add origin https://github.com/takatogoto/machinelearning.git
