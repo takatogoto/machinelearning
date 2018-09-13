@@ -28,6 +28,7 @@ git config --list
 git remote add origin https://github.com/xxx/xxx.git
 # git remote add origin https://github.com/takatogoto/machinelearning.git
 
+git pull origin master
 
 
 *** remove file ***
