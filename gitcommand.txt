@@ -1,3 +1,11 @@
+*** branch ***
+git status
+git branch b1
+git checkout b1
+git add xxxx.py
+git commit -m "any comment"
+git push -u origin b1
+
 *** usual use ***
 
 git pull origin master
