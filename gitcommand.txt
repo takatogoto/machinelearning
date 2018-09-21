@@ -1,4 +1,4 @@
-*** branch ***
+*** creat branch ***
 git status
 git branch b1
 git checkout b1
@@ -6,15 +6,29 @@ git add xxxx.py
 git commit -m "any comment"
 git push -u origin b1
 
-*** usual use ***
 
+*** merge branch ***
+git checkout master
+git status
+git diff master b1
+git merge b1
+git checkout b1
+git push
+
+
+*** delete branch (local & remote) ***
+git checkout b1
+git branch -a
+git branch -d b2
+git push --delete origin b2
+
+
+*** usual use ***
 git pull origin master
 git status
 git add xxxx.py
 git commit -m "any comment"
 git push origin master
-
-
 
 
 *** open new repo ***
