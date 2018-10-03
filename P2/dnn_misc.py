@@ -99,8 +99,9 @@ class linear_layer:
         # only return backward_output, but need to compute self.gradient['W'] and self.gradient['b']                             #
         ##########################################################################################################################
         self.gradient['b'] = np.dot(grad,1)
-        self.gradient['W'] = np.dot(grad.T, X)
-        backward_output = np.dot(self.params['W'], grad.T )
+        self.gradient['W'] = np.transpose(np.dot(grad.T, X))
+        backward_output = np.dot(grad, np.transpose(self.params['W']))
+        
         return backward_output
 
 
@@ -139,7 +140,9 @@ class relu:
         ################################################################################
         # TODO: Implement the relu forward pass. Store the result in forward_output    #
         ################################################################################
-
+        self.mask = (X > 0)
+        forward_output = np.multiply(X,self.mask)
+        
         return forward_output
 
     def backward(self, X, grad):
@@ -169,6 +172,7 @@ class relu:
         # backward_output = ? (A numpy array of the shape of X, the gradient of the mini-batch loss w.r.t. X)                    #
         # PLEASE follow the Heaviside step function defined in CSCI567_HW2.pdf                                                   #
         ##########################################################################################################################
+        backward_output = np.multiply(grad, self.mask)
 
         return backward_output
 
@@ -247,7 +251,7 @@ class dropout:
         # backward_output = ? (A numpy array of the shape of X, the gradient of the mini-batch loss w.r.t. X)                    #
         # PLEASE follow the formula shown in the homework pdf                                                                    #
         ##########################################################################################################################
-
+        backward_output = np.multiply(grad, self.mask)
         return backward_output
 
 
