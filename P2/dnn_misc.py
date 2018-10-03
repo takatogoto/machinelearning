@@ -64,6 +64,7 @@ class linear_layer:
         ################################################################################
         # TODO: Implement the linear forward pass. Store the result in forward_output  #
         ################################################################################
+        forward_output = np.dot(X, self.params['W']) + self.params['b']
 
         return forward_output
 
@@ -97,7 +98,9 @@ class linear_layer:
         # backward_output = ? (N-by-input_D numpy array, the gradient of the mini-batch loss w.r.t. X)                           #
         # only return backward_output, but need to compute self.gradient['W'] and self.gradient['b']                             #
         ##########################################################################################################################
-
+        self.gradient['b'] = np.dot(grad,1)
+        self.gradient['W'] = np.dot(grad.T, X)
+        backward_output = np.dot(self.params['W'], grad.T )
         return backward_output
 
 
