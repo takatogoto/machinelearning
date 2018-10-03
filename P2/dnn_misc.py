@@ -140,7 +140,7 @@ class relu:
         ################################################################################
         # TODO: Implement the relu forward pass. Store the result in forward_output    #
         ################################################################################
-        self.mask = (X > 0)
+        self.mask = (X >= 0)
         forward_output = np.multiply(X,self.mask)
         
         return forward_output
