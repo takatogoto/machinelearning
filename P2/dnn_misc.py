@@ -64,6 +64,7 @@ class linear_layer:
         ################################################################################
         # TODO: Implement the linear forward pass. Store the result in forward_output  #
         ################################################################################
+        forward_output = np.dot(X, self.params['W']) + self.params['b']
 
         return forward_output
 
@@ -97,7 +98,11 @@ class linear_layer:
         # backward_output = ? (N-by-input_D numpy array, the gradient of the mini-batch loss w.r.t. X)                           #
         # only return backward_output, but need to compute self.gradient['W'] and self.gradient['b']                             #
         ##########################################################################################################################
-
+        #self.gradient['b'] = np.transpose(np.dot(grad,np.ones(len(self.gradient['b']))))
+        self.gradient['b'] = np.sum(grad,0)
+        self.gradient['W'] = np.transpose(np.dot(grad.T, X))
+        backward_output = np.dot(grad, np.transpose(self.params['W']))
+        
         return backward_output
 
 
@@ -136,7 +141,9 @@ class relu:
         ################################################################################
         # TODO: Implement the relu forward pass. Store the result in forward_output    #
         ################################################################################
-
+        self.mask = (X >= 0)
+        forward_output = np.multiply(X,self.mask)
+        
         return forward_output
 
     def backward(self, X, grad):
@@ -166,6 +173,7 @@ class relu:
         # backward_output = ? (A numpy array of the shape of X, the gradient of the mini-batch loss w.r.t. X)                    #
         # PLEASE follow the Heaviside step function defined in CSCI567_HW2.pdf                                                   #
         ##########################################################################################################################
+        backward_output = np.multiply(grad, self.mask)
 
         return backward_output
 
@@ -244,7 +252,7 @@ class dropout:
         # backward_output = ? (A numpy array of the shape of X, the gradient of the mini-batch loss w.r.t. X)                    #
         # PLEASE follow the formula shown in the homework pdf                                                                    #
         ##########################################################################################################################
-
+        backward_output = np.multiply(grad, self.mask)
         return backward_output
 
 

@@ -7,6 +7,29 @@ import numpy as np
 # Replace TODO with your code
 #######################################################################
 
+def softmax(x):
+    # avoid overflow
+
+    if len(x.shape) ==1:
+        c = np.max(x,0)
+        exp_x = np.exp(x - c)
+        sum_exp_x = np.sum(exp_x,0)
+        y = exp_x / sum_exp_x
+    else:
+        c = np.transpose(np.tile(np.max(x,1),(x.shape[1],1)))
+        exp_x = np.exp(x - c)
+        sum_exp_x = np.sum(exp_x,1)
+        y = np.transpose(np.divide(exp_x.T,sum_exp_x))
+
+    return y 
+
+def underlog(x):
+    x = x - np.max(x)
+    y = x - np.log(np.sum(np.exp(x)))
+    
+    return y
+
+
 def binary_train(X, y, w0=None, b0=None, step_size=0.5, max_iterations=1000):
     """
     Inputs:
@@ -43,7 +66,16 @@ def binary_train(X, y, w0=None, b0=None, step_size=0.5, max_iterations=1000):
     """
     TODO: add your code here
     """
-
+    ## w = w - step * sum(σ(wxn+b)-yn)xn
+    ## b = b - step * sum(σ(wxn+b)-yn)
+    ## wtx + b = np.sum(X_train * w.T,1) +b
+    # x * np.tile(dfn, (D,1)).T
+    for i in range(max_iterations):
+        z = (np.sum(X * w.T,1) +b)
+        sgm = sigmoid(z) - y 
+        b = b - step_size * np.sum(sgm,0)
+        w = w - step_size * np.sum(X * np.tile(sgm, (D,1)).T, 0)
+        
     assert w.shape == (D,)
     return w, b
 
@@ -64,6 +96,8 @@ def binary_predict(X, w, b):
     """
     TODO: add your code here
     """      
+    y = np.sum(X * w, 1) + b
+    preds = np.round(sigmoid(y))
     assert preds.shape == (N,) 
     return preds
 
@@ -113,6 +147,20 @@ def multinomial_train(X, y, C,
     TODO: add your code here
     """
 
+    ## w = w - step * sum(σ(wxn+b)-yn)xn
+    ## b = b - step * sum(σ(wxn+b)-yn)
+    ## wtx + b = np.sum(X_train * w.T,1) +b
+    
+    # class label to one-hot
+    yc = np.identity(C)[y].astype(int)
+    
+    for i in range(max_iterations):
+        wxb = np.dot(X,w.T) + np.tile(b,(N,1))
+        smyx = np.multiply(np.tile((softmax(wxb) - yc),(D,1))
+                           ,np.tile(X.ravel(order='F'),(C,1)).T).reshape(D, N, C)      
+        w = w - step_size * np.sum(smyx,1).T
+        b = b - step_size * np.sum((softmax(wxb) - yc),0)
+        
     assert w.shape == (C, D)
     assert b.shape == (C,)
     return w, b
@@ -140,7 +188,11 @@ def multinomial_predict(X, w, b):
     """
     TODO: add your code here
     """   
-
+    # deterministic prediction == no need to sigmoid
+    yc = np.dot(X, w.T) +  np.tile(b,(N,1))
+    # one-hot to class label
+    preds = np.argmax(yc, axis = 1)
+    
     assert preds.shape == (N,)
     return preds
 
@@ -179,6 +231,11 @@ def OVR_train(X, y, C, w0=None, b0=None, step_size=0.5, max_iterations=1000):
     """
     TODO: add your code here
     """
+    
+    for c in range(C):
+        yc = (y==c).astype(int)
+        w[c,:], b[c] = binary_train(X, yc, w0=w[c,:], b0=b[c], step_size=0.5, max_iterations=1000)
+    
     assert w.shape == (C, D), 'wrong shape of weights matrix'
     assert b.shape == (C,), 'wrong shape of bias terms vector'
     return w, b
@@ -207,6 +264,8 @@ def OVR_predict(X, w, b):
     """
     TODO: add your code here
     """
+    yc = np.dot(X, w.T) +  np.tile(b,(N,1))
+    preds = np.argmax(yc, axis = 1)
 
     assert preds.shape == (N,)
     return preds
