@@ -286,7 +286,7 @@ def main(main_params):
 
             # TODO (5)
             c2 = model['C2'].forward(m1)
-            h2 = model['nonlinear2'].forward(c1)
+            h2 = model['nonlinear2'].forward(c2)
             m2 = model['M2'].forward(h2)
 
             ################################################################################
