@@ -73,8 +73,8 @@ def binary_train(X, y, w0=None, b0=None, step_size=0.5, max_iterations=1000):
     for i in range(max_iterations):
         z = (np.sum(X * w.T,1) +b)
         sgm = sigmoid(z) - y 
-        b = b - step_size * np.sum(sgm,0)
-        w = w - step_size * np.sum(X * np.tile(sgm, (D,1)).T, 0)
+        b = b - step_size * np.sum(sgm,0) / N
+        w = w - step_size * np.sum(X * np.tile(sgm, (D,1)).T, 0) / N
         
     assert w.shape == (D,)
     return w, b
@@ -158,8 +158,8 @@ def multinomial_train(X, y, C,
         wxb = np.dot(X,w.T) + np.tile(b,(N,1))
         smyx = np.multiply(np.tile((softmax(wxb) - yc),(D,1))
                            ,np.tile(X.ravel(order='F'),(C,1)).T).reshape(D, N, C)      
-        w = w - step_size * np.sum(smyx,1).T
-        b = b - step_size * np.sum((softmax(wxb) - yc),0)
+        w = w - step_size * np.sum(smyx,1).T / N
+        b = b - step_size * np.sum((softmax(wxb) - yc),0) / N
         
     assert w.shape == (C, D)
     assert b.shape == (C,)
