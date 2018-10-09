@@ -1,3 +1,18 @@
+*** usual use ***
+git pull origin dev
+git status
+git add xxxx.py
+git commit -m "any comment"
+git push origin dev
+
+#git push origin master
+
+*** remove file ***
+git rm xxx.py
+git commit -m "any comment"
+git push origin dev
+
+
 *** creat branch ***
 git status
 git branch b1
@@ -17,19 +32,31 @@ git push
 
 
 *** delete branch (local & remote) ***
+# if branch remain at local
+git fetch --prune
+
 git checkout b1
 git branch -a
 git branch -d b2
+
+#ignore whether merge or not
+git branch -D b2
+
 git push --delete origin b2
 
 
-*** usual use ***
-git pull origin master
-git status
-git add xxxx.py
-git commit -m "any comment"
-git push origin master
+*** add gitignore ***
+vi .gitignore
+### vi editor ###
+    *.swp
+    /path/to/file.txt # add
+        Esc :wq! enter
+### vi editor ###
 
+git rm --cached /path/to/file.txt
+git add .gitignore
+git commit -m "add file to .gitignore"
+git push origin master
 
 *** open new repo ***
 """
@@ -49,11 +76,6 @@ git remote add origin https://github.com/xxx/xxx.git
 
 git pull origin master
 
-
-*** remove file ***
-git rm xxx.py
-git commit -m "any comment"
-git push origin master
 
 
 *** change repo name ***
