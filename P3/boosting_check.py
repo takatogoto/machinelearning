@@ -2,9 +2,10 @@ import numpy as np
 from sklearn.metrics import accuracy_score
 
 import data_loader
-import decision_stump_sol as decision_stump
-import boosting_sol as boosting
-
+#import decision_stump_sol as decision_stump
+#import boosting_sol as boosting
+import decision_stump
+import boosting
 
 
 #################
