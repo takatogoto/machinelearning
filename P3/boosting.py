@@ -43,7 +43,7 @@ class Boosting(Classifier):
             bh[t,:] = self.betas[t] * np.array(clfset.predict(features))
             t += 1
         
-        predict = (np.sum(bh,axis=0)).astype(int).tolist()
+        predict = np.sign(np.sum(bh,axis=0)).astype(int).tolist()
         
         return predict
         
@@ -101,10 +101,17 @@ class AdaBoost(Boosting):
                                                                 == np.array(self.clfs_picked[t].predict(features))))\
             + np.exp(beta) * np.multiply(Dn[t, :], (np.array(labels)
                                                                 != np.array(self.clfs_picked[t].predict(features))))
+
+            
             Dn[t+1, :] = Dn[t+1, :] / np.sum(Dn[t+1, :])
             #print(Dn)
-            print(self.betas)
-                
+            #print(self.betas)
+            #print(findht)
+            #print('predict')
+            #print(self.clfs_picked[t].predict(features))
+            #print('labels')
+            #print(labels)
+            #print(np.array(labels) != np.array(self.clfs_picked[t].predict(features)))
             
     def predict(self, features: List[List[float]]) -> List[int]:
         return Boosting.predict(self, features)
