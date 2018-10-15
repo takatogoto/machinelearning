@@ -90,6 +90,27 @@ class TreeNode(object):
             # TODO: compute the conditional entropy
             ########################################################
             
+            branp = np.array(branches)
+            B, C = branp.shape
+            # B axis = 0, C axis =1. B x C numpy array
+
+            # number of element for each branch B x 1
+            bele = np.sum(branp, axis = 1).reshape((B,1))
+            
+            # each class probability for each branch B x C
+            Py_a = np.divide(branp, bele)
+            
+            # each branch probability B x 1
+            Pa = bele / np.sum(branp)
+            
+            # entropy for each branch 1 x B
+            H = np.sum(- np.multiply(Py_a, (np.ma.log2(Py_a)).filled(0)), axis=1)
+            
+            # conditional entropy
+            coen = np.dot(H,Pa)[0].tolist()
+            
+            return coen
+            
         
         for idx_dim in range(len(self.features[0])):
         ############################################################
