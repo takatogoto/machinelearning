@@ -67,14 +67,45 @@ class AdaBoost(Boosting):
         # TODO: implement "train"
         ############################################################
         N = len(features)
-        D = np.zeros(self.T + 1, N)
-        D[0,:] = 1/N
+        Dn = np.zeros((self.T + 1, N))
+        
+        # 1
+        Dn[0,:] = 1/N
+        
+        # 2
         for t in range(self.T):
-            self.clfs_picked.extend(clfs
-        
-        
-        
-        
+            
+            # 3
+            htemp = []
+            eps = np.inf
+            beta = 0.0
+            for cl in self.clfs:
+                #print(cl.predict(features))
+                findht = np.multiply(Dn[t,:], 
+                                     (np.array(labels) != np.array(cl.predict(features))))
+                #print(cl.predict(features))
+                #print(np.array(labels) != np.array(cl.predict(features)))
+                
+                if np.sum(findht) < eps:
+                    htemp = cl
+                    eps = np.sum(findht) # 4
+            
+            self.clfs_picked.extend([htemp])
+            
+            # 5
+            beta = 0.5 * np.log((1 - eps) / eps)
+            self.betas.extend([beta])
+            
+            # 6
+            Dn[t+1, :] = np.exp(-beta) * np.multiply(Dn[t, :], (np.array(labels)
+                                                                == np.array(self.clfs_picked[t].predict(features))))\
+            + np.exp(beta) * np.multiply(Dn[t, :], (np.array(labels)
+                                                                != np.array(self.clfs_picked[t].predict(features))))
+            Dn[t+1, :] = Dn[t+1, :] / np.sum(Dn[t+1, :])
+            #print(Dn)
+            print(self.betas)
+                
+            
     def predict(self, features: List[List[float]]) -> List[int]:
         return Boosting.predict(self, features)
 
