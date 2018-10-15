@@ -15,7 +15,15 @@ def objective_function(X, y, w, lamb):
     - obj_value: the value of objective function in SVM primal formulation
     """
     # you need to fill in your solution here
+    
+    # 0.5 * lamb * ||w||^2 + 1/N sum(max(0,1-ywx))  
+    X = np.array(X)
+    y = np.array(y)
 
+    N = X.shape[0]
+    z = 1- np.multiply(y, np.transpose(np.dot(X,w)))
+    z = z[z>0]
+    obj_value = 0.5 * lamb * (np.linalg.norm(w) **2) + sum(z) / N
 
     return obj_value
 
@@ -48,7 +56,29 @@ def pegasos_train(Xtrain, ytrain, w, lamb, k, max_iterations):
 
         # you need to fill in your solution here
 
-
+        X_t = Xtrain[A_t]
+        y_t = ytrain[A_t]
+        
+        # 4
+        #A_tpls = A_t[np.multiply(y_t, np.dot(X_t,w)) < 1]
+        A_tpls = A_t[(np.multiply(y_t, np.transpose(np.dot(X_t,w)) )<1).ravel()]
+        X_tpls = Xtrain[A_tpls]
+        y_tpls = ytrain[A_tpls]
+        
+        # 5
+        ita_t = 1/(lamb * iter)
+        
+        # 6
+        w_thalf = (1-ita_t * lamb) * w + ita_t/k * np.sum(
+            np.multiply(y_tpls.reshape(y_tpls.shape[0],1),X_tpls),axis=0).reshape(D,1)
+        
+        # 7
+        w = w_thalf * min(1,1/(np.sqrt(lamb) * np.linalg.norm(np.array(w_thalf))))
+        
+        train_obj.append(objective_function(X_t, y_t, w, lamb))
+        # print(train_obj[iter-1])
+        # print(w[0])
+        
     return w, train_obj
 
 
@@ -64,7 +94,13 @@ def pegasos_test(Xtest, ytest, w_l):
     - test_acc: testing accuracy.
     """
     # you need to fill in your solution here
-
+    
+    Xtest = np.array(Xtest)
+    ytest = np.array(ytest)
+    N = Xtest.shape[0]
+    ywx = (np.multiply(ytest, np.transpose(np.dot(Xtest,w_l))) > 0).ravel()
+    ytru = ytest > 0
+    test_acc = sum(ytru == ywx)/N
 
     return test_acc
 

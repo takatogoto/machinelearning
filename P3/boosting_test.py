@@ -3,8 +3,11 @@ from sklearn.metrics import accuracy_score
 import json
 
 import data_loader
-import decision_stump_sol as decision_stump
-import boosting_sol as boosting
+#import decision_stump_sol as decision_stump
+#import boosting_sol as boosting
+import decision_stump
+import boosting
+
 
 # load data
 X_train, X_test, y_train, y_test = data_loader.binary_iris_dataset()
