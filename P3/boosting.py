@@ -36,12 +36,15 @@ class Boosting(Classifier):
         ########################################################
         
         bh = np.zeros((self.T, len(features)))
-        #for t in range(self.T):
-        #    bh[t,:] = self.betas[t] * np.array(self.clfs_picked[t].predict(features)) ##clfs argv
-        t = 0
-        for clfset in self.clfs_picked:
-            bh[t,:] = self.betas[t] * np.array(clfset.predict(features))
-            t += 1
+        #t = 0
+        #for clfset in self.clfs_picked:
+        #    bh[t,:] = self.betas[t] * np.array(clfset.predict(features))
+        #    t += 1
+        
+        # when calcultating, list must change into numpy type 
+        for t in range(self.T):
+             bh[t,:] = self.betas[t] * np.array(self.clfs_picked[t].predict(features))
+        
         
         predict = np.sign(np.sum(bh,axis=0)).astype(int).tolist()
         
@@ -80,16 +83,14 @@ class AdaBoost(Boosting):
             eps = np.inf
             beta = 0.0
             for cl in self.clfs:
-                #print(cl.predict(features))
                 findht = np.multiply(Dn[t,:], 
                                      (np.array(labels) != np.array(cl.predict(features))))
-                #print(cl.predict(features))
-                #print(np.array(labels) != np.array(cl.predict(features)))
                 
                 if np.sum(findht) < eps:
                     htemp = cl
                     eps = np.sum(findht) # 4
             
+            # extend need list types[]
             self.clfs_picked.extend([htemp])
             
             # 5
@@ -104,14 +105,7 @@ class AdaBoost(Boosting):
 
             
             Dn[t+1, :] = Dn[t+1, :] / np.sum(Dn[t+1, :])
-            #print(Dn)
-            #print(self.betas)
-            #print(findht)
-            #print('predict')
-            #print(self.clfs_picked[t].predict(features))
-            #print('labels')
-            #print(labels)
-            #print(np.array(labels) != np.array(self.clfs_picked[t].predict(features)))
+
             
     def predict(self, features: List[List[float]]) -> List[int]:
         return Boosting.predict(self, features)
