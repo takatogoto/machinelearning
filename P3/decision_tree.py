@@ -32,7 +32,6 @@ class DecisionTree(Classifier):
         print(name + '{')
         
         string = ''
-        #for idx_cls in node.num_cls:
         for idx_cls in range(node.num_cls):
             string += str(node.labels.count(idx_cls)) + ' '
         print(indent + ' num of sample / cls: ' + string)
@@ -110,13 +109,22 @@ class TreeNode(object):
             coen = np.dot(H,Pa)[0].tolist()
             
             return coen
-            
         
+        
+        # handle as numpy
+        feanp = np.array(self.features)
         for idx_dim in range(len(self.features[0])):
-        ############################################################
-        # TODO: compare each split using conditional entropy
-        #       find the best split
-        ############################################################
+            ############################################################
+            # TODO: compare each split using conditional entropy
+            #       find the best split
+            ############################################################
+            
+            Ctemp = len(np.unique(labels))
+            for idx_num in range(len(self.features)):
+                thr
+                
+                
+            
 
 
 
@@ -142,6 +150,3 @@ class TreeNode(object):
             return self.children[idx_child].predict(feature)
         else:
             return self.cls_max
-
-
-
