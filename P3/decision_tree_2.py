@@ -161,8 +161,6 @@ class TreeNode(object):
         #print(best_enropy)           
         self.dim_split = best_dim
         self.feature_uniq_split = list(set([row[best_dim] for row in self.features]))
-        #print('feature_uniq')
-        #print(self.feature_uniq_split)
 
 
         ############################################################
@@ -171,13 +169,9 @@ class TreeNode(object):
 
         #h_set.add(decision_stump.DecisionStump(s,b,d))
         for child in self.feature_uniq_split:
-            #childfea = np.delete(feanp[feanp[:, self.dim_split]==child], self.dim_split, axis=1).tolist()
-            childfea = feanp[feanp[:, self.dim_split]==child].tolist()
+            childfea = np.delete(feanp[feanp[:, self.dim_split]==child], self.dim_split, axis=1).tolist()
             chilabel = labnp[feanp[:, self.dim_split]==child].tolist()
-            if len(chilabel) != 0:
-                print('uniquelabel')
-                print(len(np.unique(chilabel)) )
-                self.children.append(TreeNode(childfea, chilabel, self.num_cls))
+            self.children.append(TreeNode(childfea, chilabel, self.num_cls))
         
 
 
