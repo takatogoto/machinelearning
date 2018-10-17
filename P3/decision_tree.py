@@ -113,20 +113,54 @@ class TreeNode(object):
         
         # handle as numpy
         feanp = np.array(self.features)
+        labnp = np.array(self.labels)
+        Ctemp = len(np.unique(self.labels))
+        best_enropy = np.inf
+        best_dim = 0
+        
         for idx_dim in range(len(self.features[0])):
             ############################################################
             # TODO: compare each split using conditional entropy
             #       find the best split
             ############################################################
             
-            Ctemp = len(np.unique(labels))
-            for idx_num in range(len(self.features)):
-                thr
-                
-                
+            # number of discrete value == number of branch
+            # set() elminate duplication
+            Bset = set([row[idx_dim] for row in self.features])
+            Btemp = len(Bset)
             
+            # initilize branch C x B array
+            branchtm = np.zeros((Ctemp, Btemp))
+            
+            # loop for branch
+            for i, valfea in enumerate(list(Bset)):
+                print("branch")
+                print(i)
+                
+                # loop for classes
+                for j, clanm in enumerate(list(set(labels))):
+                    print("classes")
+                    print(j)
+                    
+                    # find number of ith branch(bool array for all sample)
+                    branchbool = feanp[:,idx_dim] == valfea
+                    # find number of jth classes(bool array for all sample)
+                    classesbool = labnp == clanm
+                    # find number of ith branch and jth classes
+                    numberofbc = np.dot(branchbool, classesbool)
+                    branchtm[j][i] = numberofbc
 
-
+            branchlist = branchtm.astype(int).tolist()
+            entemp = conditional_entropy(branchlist)
+            
+            if entemp < best_enropy:
+                best_enropy = entemp
+                best_dim = idx_dim
+                
+            print(best_dim)
+            print(best_enropy)           
+            self.dim_split = best_dim
+            self.feature_uniq_split = [row[best_dim] for row in self.features]
 
 
         ############################################################
