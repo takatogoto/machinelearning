@@ -11,7 +11,7 @@ class DecisionTree(Classifier):
         # init.
         assert(len(features) > 0)
         self.feautre_dim = len(features[0])
-        num_cls = np.max(labels)+1 # number of class at the node
+        num_cls = np.max(labels)+1
 
         # build the tree
         self.root_node = TreeNode(features, labels, num_cls)
@@ -36,7 +36,7 @@ class DecisionTree(Classifier):
             string += str(node.labels.count(idx_cls)) + ' '
         print(indent + ' num of sample / cls: ' + string)
 
-        if node.splittable and not node.leaf:
+        if node.splittable:
             print(indent + '  split by dim {:d}'.format(node.dim_split))
             for idx_child, child in enumerate(node.children):
                 self.print_tree(node=child, name= '  '+name+'/'+str(idx_child), indent=indent+'  ')
@@ -66,8 +66,6 @@ class TreeNode(object):
         self.dim_split = None # the index of the feature to be split
 
         self.feature_uniq_split = None # the possible unique values of the feature to be split
-        
-        self.leaf = False
 
 
     def split(self):
@@ -194,21 +192,18 @@ class TreeNode(object):
             if len(chilabel) != 0:
                # print('uniquelabel')
                # print(np.unique(chilabel))
-                #self.children.append(TreeNode(childfea, chilabel, len(np.unique(chilabel))))
-                self.children.append(TreeNode(childfea, chilabel, self.num_cls))
+                self.children.append(TreeNode(childfea, chilabel, len(np.unique(chilabel))))
+        
 
         # split the child nodes
         for child in self.children:
             if child.splittable and len(child.features[0])!=0:
                 child.split()
-            else :
-                self.leaf = True
 
         return
 
     def predict(self, feature: List[int]) -> int:
-        if self.splittable and not self.leaf:
-            print('a')
+        if self.splittable and len(self.feature_uniq_split)!=0:
             print(feature)
             idx_child = self.feature_uniq_split.index(feature[self.dim_split])
             return self.children[idx_child].predict(feature)
