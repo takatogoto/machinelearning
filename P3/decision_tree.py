@@ -118,6 +118,11 @@ class TreeNode(object):
         best_enropy = np.inf
         best_dim = 0
         
+        print('self.features')
+        print(self.features)
+        print('self.labels')
+        print(self.labels)
+        
         for idx_dim in range(len(self.features[0])):
             ############################################################
             # TODO: compare each split using conditional entropy
@@ -152,13 +157,18 @@ class TreeNode(object):
 
             branchlist = branchtm.astype(int).tolist()
             entemp = conditional_entropy(branchlist)
+
+            print('idx_dim: ', idx_dim)
+            print('branchlist: ', branchlist)
+            print('entropy: ', entemp)
             
             if entemp < best_enropy:
                 best_enropy = entemp
                 best_dim = idx_dim
                 
         #print(best_dim)
-        #print(best_enropy)           
+        #print(best_enropy)
+        print('next')
         self.dim_split = best_dim
         self.feature_uniq_split = list(set([row[best_dim] for row in self.features]))
         #print('feature_uniq')
@@ -175,9 +185,9 @@ class TreeNode(object):
             childfea = feanp[feanp[:, self.dim_split]==child].tolist()
             chilabel = labnp[feanp[:, self.dim_split]==child].tolist()
             if len(chilabel) != 0:
-                print('uniquelabel')
-                print(len(np.unique(chilabel)) )
-                self.children.append(TreeNode(childfea, chilabel, self.num_cls))
+               # print('uniquelabel')
+               # print(np.unique(chilabel))
+                self.children.append(TreeNode(childfea, chilabel, len(np.unique(chilabel))))
         
 
 
