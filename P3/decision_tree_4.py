@@ -184,7 +184,6 @@ class TreeNode(object):
 
         #h_set.add(decision_stump.DecisionStump(s,b,d))
         for child in self.feature_uniq_split:
-            ## add if empty situation
             childfea = np.delete(feanp[feanp[:, self.dim_split]==child], self.dim_split, axis=1).tolist()
             #childfea = feanp[feanp[:, self.dim_split]==child].tolist()
             chilabel = labnp[feanp[:, self.dim_split]==child].tolist()
