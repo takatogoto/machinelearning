@@ -11,7 +11,7 @@ class DecisionTree(Classifier):
         # init.
         assert(len(features) > 0)
         self.feautre_dim = len(features[0])
-        num_cls = np.max(labels)+1 # number of class at the node
+        num_cls = np.max(labels)+1
 
         # build the tree
         self.root_node = TreeNode(features, labels, num_cls)
@@ -36,7 +36,7 @@ class DecisionTree(Classifier):
             string += str(node.labels.count(idx_cls)) + ' '
         print(indent + ' num of sample / cls: ' + string)
 
-        if node.splittable and not node.leaf:
+        if node.splittable:
             print(indent + '  split by dim {:d}'.format(node.dim_split))
             for idx_child, child in enumerate(node.children):
                 self.print_tree(node=child, name= '  '+name+'/'+str(idx_child), indent=indent+'  ')
@@ -66,8 +66,6 @@ class TreeNode(object):
         self.dim_split = None # the index of the feature to be split
 
         self.feature_uniq_split = None # the possible unique values of the feature to be split
-        
-        self.leaf = False
 
 
     def split(self):
@@ -92,14 +90,14 @@ class TreeNode(object):
             ########################################################
             
             branp = np.array(branches)
-            C, B = branp.shape
-            # C axis = 0, B axis =1. C x B numpy array
+            B, C = branp.shape
+            # B axis = 0, C axis =1. B x C numpy array
 
             # number of element for each branch B x 1
-            bele = np.sum(branp, axis = 0).reshape((B,1))
+            bele = np.sum(branp, axis = 1).reshape((B,1))
             
             # each class probability for each branch B x C
-            Py_a = np.divide(np.transpose(branp), bele)
+            Py_a = np.divide(branp, bele)
             
             # each branch probability B x 1
             Pa = bele / np.sum(branp)
@@ -119,11 +117,6 @@ class TreeNode(object):
         Ctemp = len(np.unique(self.labels))
         best_enropy = np.inf
         best_dim = 0
-        
-        #print('self.features')
-        #print(self.features)
-        #print('self.labels')
-        #print(self.labels)
         
         for idx_dim in range(len(self.features[0])):
             ############################################################
@@ -154,28 +147,20 @@ class TreeNode(object):
                     # find number of jth classes(bool array for all sample)
                     classesbool = labnp == clanm
                     # find number of ith branch and jth classes
-                    numberofbc = np.dot(1 * branchbool, 1* classesbool)
+                    numberofbc = np.dot(branchbool, classesbool)
                     branchtm[j][i] = numberofbc
 
             branchlist = branchtm.astype(int).tolist()
             entemp = conditional_entropy(branchlist)
-            print(branchlist)
-
-            #print('idx_dim: ', idx_dim)
-            #print('branchlist: ', branchlist)
-            #print('entropy: ', entemp)
             
             if entemp < best_enropy:
                 best_enropy = entemp
                 best_dim = idx_dim
                 
         #print(best_dim)
-        #print(best_enropy)
-        #print('next')
+        #print(best_enropy)           
         self.dim_split = best_dim
         self.feature_uniq_split = list(set([row[best_dim] for row in self.features]))
-        #print('feature_uniq')
-        #print(self.feature_uniq_split)
 
 
         ############################################################
@@ -185,30 +170,20 @@ class TreeNode(object):
         #h_set.add(decision_stump.DecisionStump(s,b,d))
         for child in self.feature_uniq_split:
             childfea = np.delete(feanp[feanp[:, self.dim_split]==child], self.dim_split, axis=1).tolist()
-            #childfea = feanp[feanp[:, self.dim_split]==child].tolist()
             chilabel = labnp[feanp[:, self.dim_split]==child].tolist()
-            #print('child',child)
-            #print(chilabel)
-            #print(childfea)
-            #print(len(childfea[0]))
-            if len(chilabel) != 0:
-               # print('uniquelabel')
-               # print(np.unique(chilabel))
-                #self.children.append(TreeNode(childfea, chilabel, len(np.unique(chilabel))))
-                self.children.append(TreeNode(childfea, chilabel, self.num_cls))
+            self.children.append(TreeNode(childfea, chilabel, self.num_cls))
+        
+
 
         # split the child nodes
         for child in self.children:
-            if child.splittable and len(child.features[0])!=0:
+            if child.splittable:
                 child.split()
-            else :
-                self.leaf = True
 
         return
 
     def predict(self, feature: List[int]) -> int:
-        if self.splittable and not self.leaf:
-            print('a')
+        if self.splittable:
             print(feature)
             idx_child = self.feature_uniq_split.index(feature[self.dim_split])
             return self.children[idx_child].predict(feature)
