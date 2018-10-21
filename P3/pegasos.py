@@ -98,9 +98,8 @@ def pegasos_test(Xtest, ytest, w_l):
     Xtest = np.array(Xtest)
     ytest = np.array(ytest)
     N = Xtest.shape[0]
-    ywx = (np.multiply(ytest, np.transpose(np.dot(Xtest,w_l))) > 0).ravel()
-    ytru = ytest > 0
-    test_acc = sum(ytru == ywx)/N
+    wx = np.sign(np.dot(Xtest, w_l).ravel())
+    test_acc = np.sum(ytest.ravel() == wx)/N
 
     return test_acc
 
