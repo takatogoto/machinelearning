@@ -17,7 +17,7 @@ class KMeans():
         self.e = e
 
     def fit(self, x):
-       '''
+        '''
             Finds n_cluster in the data x
             params:
                 x - N X D numpy array
