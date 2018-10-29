@@ -37,8 +37,48 @@ class KMeans():
         # - return (means, membership, number_of_updates)
 
         # DONOT CHANGE CODE ABOVE THIS LINE
-        raise Exception(
-            'Implement fit function in KMeans class (filename: kmeans.py)')
+        #raise Exception(
+        #    'Implement fit function in KMeans class (filename: kmeans.py)')
+        
+        # initialize mu and J
+        mu0_idx = np.random.choice(range(N), self.n_cluster)
+        mu = x[mu0_idx,:]
+        j = 1e10
+
+        def compute_ridx(x, mu):
+            A = np.sum(x**2,axis=1).reshape(x.shape[0],1)
+            B = np.sum(mu**2,axis=1).reshape(mu.shape[0],1)
+            AB = np.dot(x, np.transpose(mu))
+            dists = np.sqrt(-2*AB + A + np.transpose(B))
+    
+            # because r is {0,1}, just return index 
+            r = np.argmin(np.transpose(dists), axis=1)
+            return np.ravel(r)
+
+
+
+        for itr in range(self.max_iter):    
+    
+            r_idx = compute_ridx(mu, x)
+    
+            # r_ik = 0 if xi not in k
+            # mu[r_idx,:] means mu_k when r_ik = 1, size N X D
+            #j1 = sum(np.sum(np.multiply((x - mu[r_idx,:]), (x - mu[r_idx,:])), axis=1))
+            j2 = np.sum(np.multiply((mu[r_idx,:] - x ), (mu[r_idx,:] - x)))
+            #print(j-j2)
+            
+            # stop condition
+            if abs(j-j2) < self.e:
+                break
+            
+            j = j2
+            # r_idx is asigned index for each class
+            mu = np.array(
+                [np.average(x[r_idx==i,:], axis=0) for i in range(self.n_cluster)])
+            
+        y = compute_ridx(mu, x)
+        return (mu, y, itr)        
+        
         # DONOT CHANGE CODE BELOW THIS LINE
 
 class KMeansClassifier():
