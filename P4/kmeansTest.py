@@ -31,8 +31,27 @@ def transform_image(image, code_vectors):
     # - implement the function
 
     # DONOT CHANGE CODE ABOVE THIS LINE
-    raise Exception(
-        'Implement transform_image function (filename:kmeansTest.py)')
+    #raise Exception(
+    #    'Implement transform_image function (filename:kmeansTest.py)')
+    
+    def nearest_value(mu, targetn):
+        # mu: K X 1 numpy array
+        # targetn: scalar
+        # reterun nearest value
+        idx = np.abs(mu - targetn).argmin()
+        return mu[idx]
+    
+    ax0, ax1, ax2 = image.shape
+    new_im = np.zeros((ax0, ax1, ax2))
+    
+    # RGB 3 dimension for loop
+    for k in range(3):
+        #print(k)
+        # reshape 1D
+        imx0 = np.ravel(image[:,:,k])
+        
+        new_im[:,:,k] = np.array([nearest_value(code_vectors[:,k], i) for i in list(imx0)]).reshape((ax0, ax1))     
+    
     # DONOT CHANGE CODE BELOW THIS LINE
     return new_im
 
