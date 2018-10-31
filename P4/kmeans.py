@@ -46,6 +46,8 @@ class KMeans():
         j = 1e10
 
         def compute_ridx(x, mu):
+            # input (N X D) ,(C X D)
+            # output (C X 1)
             A = np.sum(x**2,axis=1).reshape(x.shape[0],1)
             B = np.sum(mu**2,axis=1).reshape(mu.shape[0],1)
             AB = np.dot(x, np.transpose(mu))
@@ -123,13 +125,19 @@ class KMeansClassifier():
         # - assign labels to centroid_labels
 
         # DONOT CHANGE CODE ABOVE THIS LINE
-        raise Exception(
-            'Implement fit function in KMeansClassifier class (filename: kmeans.py)')
-
+        #raise Exception(
+        #    'Implement fit function in KMeansClassifier class (filename: kmeans.py)')
+        kmeans = KMeans(self.n_cluster, self.max_iter, self.e) ## self.n ....
+        centroids, membership, i = kmeans.fit(x)
+        
+        centroid_labels = np.zeros((self.n_cluster,)) # self.n_cluster
+        for k in range(self.n_cluster): # self.n_cluster
+            centroid_labels[k] = np.argmax(np.bincount(y[membership==k]))        
+        
+        self.centroids = centroids
+        self.centroid_labels = centroid_labels
         # DONOT CHANGE CODE BELOW THIS LINE
 
-        self.centroid_labels = centroid_labels
-        self.centroids = centroids
 
         assert self.centroid_labels.shape == (self.n_cluster,), 'centroid_labels should be a numpy array of shape ({},)'.format(
             self.n_cluster)
@@ -157,8 +165,24 @@ class KMeansClassifier():
         # - return labels
 
         # DONOT CHANGE CODE ABOVE THIS LINE
-        raise Exception(
-            'Implement predict function in KMeansClassifier class (filename: kmeans.py)')
+        #raise Exception(
+        #    'Implement predict function in KMeansClassifier class (filename: kmeans.py)')
+        
+        def compute_ridx(x, mu):
+            # input (N X D) ,(C X D)
+            # output (C X 1)
+            A = np.sum(x**2,axis=1).reshape(x.shape[0],1)
+            B = np.sum(mu**2,axis=1).reshape(mu.shape[0],1)
+            AB = np.dot(x, np.transpose(mu))
+            dists = np.sqrt(-2*AB + A + np.transpose(B))
+    
+            # because r is {0,1}, just return index 
+            r = np.argmin(np.transpose(dists), axis=1)
+            return np.ravel(r)
+        
+        mincent = compute_ridx(self.centroids, x) # self.centroids
+        labels = self.centroid_labels[list(mincent)] # self.centroids_labels
+        
         # DONOT CHANGE CODE BELOW THIS LINE
         return labels
 
