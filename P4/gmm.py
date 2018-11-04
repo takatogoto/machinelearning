@@ -55,7 +55,7 @@ class GMM():
             self.pi_k = np.array([np.sum(ymu == k) for k in range(self.n_cluster)]) / N #self.pi_k self.n_cluster
             
             # gamma_ik = {0, 1} at this initialize
-            self.variances = np.zeros((n_cluster, D, D)) #self.variances self.n_cluster self.means
+            self.variances = np.zeros((self.n_cluster, D, D)) #self.variances self.n_cluster self.means
             for k in range(self.n_cluster):
                 xt = x[ymu == k,:] - self.means[k,:] 
                 self.variances[k, :, :] = np.dot(np.transpose(xt),xt) / np.sum(ymu==k) #self.variances 
