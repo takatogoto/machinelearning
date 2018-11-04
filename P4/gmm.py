@@ -181,7 +181,7 @@ class GMM():
         # DONOT MODIFY CODE ABOVE THIS LINE
         #raise Exception('Implement sample function in gmm.py')
         
-         samples = np.zeros((N, self.means.shape[1]))
+        samples = np.zeros((N, self.means.shape[1]))
         firstsa = np.random.choice(self.n_cluster, N, p=self.pi_k)
         for n in range(N):
             samples[n] = np.random.multivariate_normal(
