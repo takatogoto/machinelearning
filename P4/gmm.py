@@ -225,6 +225,7 @@ class GMM():
                     self.means[k,:], self.variances[k,:]).getLikelihood(x[n,:])
             #print(lnk)
             log_likelihood += np.log(lnk)
+        log_likelihood = log_likelihood.tolist()
 
         # DONOT MODIFY CODE BELOW THIS LINE
         return log_likelihood
