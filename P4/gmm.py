@@ -130,9 +130,9 @@ class GMM():
             #print('means', means2[0,:])
             #print('Eq6')
             # eq.(7)
-            variances2 = np.zeros(self.variances.shape)
+            variances2 = np.zeros((D,D))
             for k in range(self.n_cluster):
-                sumvark = .0
+                sumvark = np.zeros((D,D))
                 for n in range(N):
                     xmu = x[n, :] - self.means[k, :]
                     sumvark += gamma[n, k]*(np.dot(np.transpose(xmu), xmu))
@@ -285,8 +285,8 @@ class GMM():
             
             p = np.exp(-0.5 * np.dot(np.dot((x - self.mean), self.inv),
                                      np.transpose(x - self.mean))) / np.sqrt(self.c) # self.mean self.inv self.c
-            if np.abs(p) < 1e-320:
-                p = 1e-320
+            if np.abs(p) < 1e-200:
+                p = 1e-200
 
             # DONOT MODIFY CODE BELOW THIS LINE
             return p
