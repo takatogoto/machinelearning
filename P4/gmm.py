@@ -293,6 +293,8 @@ class GMM():
                                      np.transpose(x - self.mean))) / np.sqrt(self.c) # self.mean self.inv self.c
             if np.abs(p) < 1e-200:
                 p = 1e-200
+            elif p > np.exp(700) or np.isinf(p):
+                p = np.exp(700)
 
             # DONOT MODIFY CODE BELOW THIS LINE
             return p
