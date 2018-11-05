@@ -265,7 +265,9 @@ class GMM():
                 #print(self.variance)
                 self.variance += 1e-3 * np.identity(len(self.variance)) # self.variance
             self.inv = np.linalg.inv(self.variance) # self.variance self.inv
-            self.c = np.abs(((2*np.pi)**D) * np.linalg.det(self.variance)) # self.c self.variance            
+            self.c = np.abs(((2*np.pi)**D) * np.linalg.det(self.variance)) # self.c self.variance
+            if self.c < 1e-100:
+                self.c = 1e-100
 
             # DONOT MODIFY CODE BELOW THIS LINE
 
