@@ -130,7 +130,7 @@ class GMM():
             #print('means', means2[0,:])
             #print('Eq6')
             # eq.(7)
-            variances2 = np.zeros((D,D))
+            variances2 = np.zeros(self.variances.shape)
             for k in range(self.n_cluster):
                 sumvark = np.zeros((D,D))
                 for n in range(N):
