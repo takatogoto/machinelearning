@@ -109,9 +109,9 @@ class GMM():
                     #if gaus ==0:
                     #    print('gaus is 0 when n, k', n , k)
                     normk[k]= self.pi_k[k] * gaus
-                    if np.isnan(normk[k]):
-                        normk[k] =0  
-                    sumnorm += normk[k]
+                    if np.isnan(normk[k]) or normk[k]<1e-200 :
+                        normk[k] = .0  
+                sumnorm = np.sum(normk)
                 #gamma[n, :] = normk / sumnorm
                 if sumnorm==0:
                     gamma[n, :] = np.ones(gamma[n, :].shape).astype(float) /self.n_cluster
