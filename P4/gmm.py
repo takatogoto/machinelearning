@@ -75,7 +75,8 @@ class GMM():
             
             self.means = np.random.rand(self.n_cluster, D) # self.means self.n_cluster
             self.pi_k = np.random.rand(self.n_cluster,) #self.pi_k self.n_cluster
-            self.variances = np.random.rand(self.n_cluster, D, D) #self.variances self.n_cluster
+            randvar = np.random.rand(self.n_cluster, D, D)
+            self.variances = (randvar + np.transpose(randvar,(0,2,1))) / 2 #self.variances self.n_cluster
 
             # DONOT MODIFY CODE BELOW THIS LINE
 
