@@ -215,8 +215,8 @@ class GMM():
         
         N, D = x.shape
         K = self.pi_k.shape[0]
+        '''
         log_likelihood = .0
-        #for n in range(3):
         for n in range(N):
             lnk = .0
             #print(lnk)
@@ -225,6 +225,11 @@ class GMM():
                     self.means[k,:], self.variances[k,:]).getLikelihood(x[n,:])
             #print(lnk)
             log_likelihood += np.log(lnk)
+        '''
+        log_likelihood = sum([np.log
+                              (sum(
+                                  [self.pi_k[k] * self.Gaussian_pdf(self.means[k,:], self.variances[k,:]).getLikelihood(x[n,:]) 
+                                   for k in range(K)])) for n in range(N)])
         log_likelihood = log_likelihood.tolist()
 
         # DONOT MODIFY CODE BELOW THIS LINE
@@ -257,7 +262,7 @@ class GMM():
                 #print(self.variance)
                 self.variance += 1e-3 * np.identity(len(self.variance)) # self.variance
             self.inv = np.linalg.inv(self.variance) # self.variance self.inv
-            self.c = ((2*np.pi)**D) * np.linalg.det(self.variance) # self.c self.variance            
+            self.c = np.abs(((2*np.pi)**D) * np.linalg.det(self.variance)) # self.c self.variance            
 
             # DONOT MODIFY CODE BELOW THIS LINE
 
