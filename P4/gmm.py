@@ -108,11 +108,14 @@ class GMM():
                     #if gaus ==0:
                     #    print('gaus is 0 when n, k', n , k)
                     normk[k]= self.pi_k[k] * gaus
+                    if np.isnan(normk[k]):
+                        normk[k] =0  
                     sumnorm += normk[k]
-
-                #if n == (N-3):
-                #    print('-2 ', normk, sumnorm)
-                gamma[n, :] = normk / sumnorm
+                #gamma[n, :] = normk / sumnorm
+                if sumnorm==0:
+                    gamma[n, :] = 1/self.n_cluster
+                else:
+                    gamma[n, :] = normk / sumnorm
             #print('min gamma', np.min(gamma))
             #print('gamma',gamma)
             #print('gamma -3 :', gamma[-3,:])
