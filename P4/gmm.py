@@ -114,7 +114,7 @@ class GMM():
                     sumnorm += normk[k]
                 #gamma[n, :] = normk / sumnorm
                 if sumnorm==0:
-                    gamma[n, :] = 1/self.n_cluster
+                    gamma[n, :] = np.ones(gamma[n, :].shape).astype(float) /self.n_cluster
                 else:
                     gamma[n, :] = normk / sumnorm
             #print('min gamma', np.min(gamma))
