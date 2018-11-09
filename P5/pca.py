@@ -63,7 +63,7 @@ def reconstruction_error(orig = np.array([]), decompressed = np.array([])):
     - decompressed: An array of size 1xD, decompressed version of the image
     """
     #error = 0
-    D =orig.shape[1]
+    D =len(orig)
     error = (np.linalg.norm(orig - decompressed)**2)/D
     
     """TODO: write your code here"""
