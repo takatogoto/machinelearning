@@ -17,8 +17,16 @@ def pca(X = np.array([]), no_dims = 50):
     - M: A matrix of eigenvectors with shape D x no_dims where D is the 
          dimensionality of the original data
     """
-    Y = np.array([])
-    M = np.array([])
+    XtX = np.dot(np.transpose(X), X)
+    eig_val, eig_vec = np.linalg.eig(XtX)
+    eig_val_idx = np.argsort(eig_val)[::-1][:no_dims]
+    eig_val_k = eig_val[eig_val_idx]
+    eig_vec_k = eig_vec[:,eig_val_idx]
+    
+    Y = np.dot(X, eig_vec_k)
+    M = eig_vec_k
+    #Y = np.array([])
+    #M = np.array([])
 
     """TODO: write your code here"""
     
@@ -39,7 +47,8 @@ def decompress(Y = np.array([]), M = np.array([])):
          examples and D is the dimensionality of each example before 
          compression.
     """
-    X_hat = np.array([])
+    #X_hat = np.array([])
+    X_hat = np.dot(Y, np.transpose(M))
 
     """TODO: write your code here"""
     
@@ -53,8 +62,10 @@ def reconstruction_error(orig = np.array([]), decompressed = np.array([])):
     - orig: An array of size 1xD, original flattened image.
     - decompressed: An array of size 1xD, decompressed version of the image
     """
-    error = 0
-
+    #error = 0
+    D =orig.shape[1]
+    error = (np.linalg.norm(orig - decompressed)**2)/D
+    
     """TODO: write your code here"""
     
     return error
