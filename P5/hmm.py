@@ -22,7 +22,16 @@ def forward(pi, A, B, O):
     ###################################################
     # Q3.1 Edit here
     ###################################################
-
+    # alpha[j, t-1] = b_s,x_t
+    
+    # initialize
+    alpha[:, 0] = pi * B[:, O[0]]
+        
+    for t in range(N-1):
+        for j in range(S):
+            #alpha[j, t+1] = B[j, O[t+1]] * np.sum(A[:, j] * alpha[j, t])
+            alpha[j, t+1] = B[j, O[t+1]] * np.sum(A[:, j] * alpha[:, t])
+            
     return alpha
 
 
@@ -45,6 +54,13 @@ def backward(pi, A, B, O):
     ###################################################
     # Q3.1 Edit here
     ###################################################
+    # initialize
+    beta[:, -1] = np.ones(S)
+
+    for t in range(N-1)[::-1]:
+        print('t and O', t, O[t+1])
+        for j in range(S):
+            beta[j, t] = np.sum(A[:, j] * B[:, O[t+1]] * beta[:, t+1])
     
     return beta
 
@@ -62,6 +78,7 @@ def seqprob_forward(alpha):
     ###################################################
     # Q3.2 Edit here
     ###################################################
+    prob = np.sum(alpha[:, -1])
     
     return prob
 
@@ -84,6 +101,7 @@ def seqprob_backward(beta, pi, B, O):
     ###################################################
     # Q3.2 Edit here
     ###################################################
+    prob = np.sum(B[:, O[0]] * pi * beta[:, 0])
     
     return prob
 
