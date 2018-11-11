@@ -58,7 +58,7 @@ def backward(pi, A, B, O):
     beta[:, -1] = np.ones(S)
 
     for t in range(N-1)[::-1]:
-        print('t and O', t, O[t+1])
+        #print('t and O', t, O[t+1])
         for j in range(S):
             beta[j, t] = np.sum(A[:, j] * B[:, O[t+1]] * beta[:, t+1])
     
@@ -122,6 +122,24 @@ def viterbi(pi, A, B, O):
     ###################################################
     # Q3.3 Edit here
     ###################################################
+    S = len(pi)
+    N = len(O)
+    delta = np.zeros([S, N])
+    Delta = -np.ones([S, N]).astype(int)
+    
+    delta[:, 0] = pi * B[:, O[0]]
+    for t in range(N-1):
+        for s in range(S):
+            delta[s, t+1] = B[s, O[t]] * np.max(A[:, s] * delta[:, t])
+            Delta[s, t+1] = np.argmax(A[:, s] * delta[:, t])
+            #print(s, A[:, s] * delta[:, 0])
+    
+    z = -np.ones(N).astype(int)
+    z[-1] = np.argmax(delta[:, -1]).astype(int)
+    for t in range(N-1)[::-1]:
+        print(t)
+        z[t] = Delta[z[t+1], t+1]
+    path = z.tolist()
     
     return path
 
