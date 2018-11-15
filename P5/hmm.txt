@@ -1,4 +1,4 @@
-Total log probability of observing the sequence AGCGTA is -8.15031, -7.99492.
+Total log probability of observing the sequence AGCGTA is -8.15031, -8.15031.
 4
 3
 2

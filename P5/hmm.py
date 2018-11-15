@@ -60,7 +60,8 @@ def backward(pi, A, B, O):
     for t in range(N-1)[::-1]:
         #print('t and O', t, O[t+1])
         for j in range(S):
-            beta[j, t] = np.sum(A[:, j] * B[:, O[t+1]] * beta[:, t+1])
+            #beta[j, t] = np.sum(A[:, j] * B[:, O[t+1]] * beta[:, t+1])
+            beta[j, t] = np.sum(A[j, :] * B[:, O[t+1]] * beta[:, t+1])
     
     return beta
 
