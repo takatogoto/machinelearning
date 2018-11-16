@@ -131,15 +131,16 @@ def viterbi(pi, A, B, O):
     delta[:, 0] = pi * B[:, O[0]]
     for t in range(N-1):
         for s in range(S):
-            delta[s, t+1] = B[s, O[t]] * np.max(A[:, s] * delta[:, t])
+            delta[s, t+1] = B[s, O[t+1]] * np.max(A[:, s] * delta[:, t])
             Delta[s, t+1] = np.argmax(A[:, s] * delta[:, t])
             #print(s, A[:, s] * delta[:, 0])
     
     z = -np.ones(N).astype(int)
     z[-1] = np.argmax(delta[:, -1]).astype(int)
     for t in range(N-1)[::-1]:
-        print(t)
+        #print(t)
         z[t] = Delta[z[t+1], t+1]
+        
     path = z.tolist()
     
     return path
