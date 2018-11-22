@@ -1,0 +1,6 @@
+[test_k_means_toy]:6
+[test_k_means_compression_score]:8
+[test_k_means_classification_score]:4
+[test_gmm_toys_score]:3
+[test_gmm_digits_score]:6
+[total]:27
