@@ -1,5 +1,5 @@
 import numpy as np
-from kmeans import KMeans
+from kmeans_sol import KMeans
 
 class GMM():
     '''
@@ -101,6 +101,7 @@ class GMM():
              return membership/np.sum(membership, axis=1).reshape([-1, 1])
  
         l = self.compute_log_likelihood(x, means, variances, pi_k)
+        #print('loglike', l)
  
         for j in range(self.max_iter):
             membership = compute_membership(self, x, means, variances, pi_k)
@@ -113,6 +114,7 @@ class GMM():
                                                        means[i]) / (np.sum(t) + 1e-10)
 
             pi_k = np.sum(membership, axis=0)/N
+            #print('variances', variances)
             l_new = self.compute_log_likelihood(x, means, variances, pi_k)
             if (np.abs(l_new-l) < self.e):
                 self.means = means

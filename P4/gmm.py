@@ -51,14 +51,16 @@ class GMM():
             #    'Implement initialization of variances, means, pi_k using k-means')
             
             kmean = KMeans(self.n_cluster, self.max_iter, self.e) # self.n_cluster self.max_iter 
-            self.means, ymu, _ = kmean.fit(x) # self.means
-            self.pi_k = np.array([np.sum(ymu == k) for k in range(self.n_cluster)]) / N #self.pi_k self.n_cluster
+            means, ymu, _ = kmean.fit(x) # self.means
+            pi_k = np.array([np.sum(ymu == k) for k in range(self.n_cluster)]) / N #self.pi_k self.n_cluster
             
             # gamma_ik = {0, 1} at this initialize
-            self.variances = np.zeros((self.n_cluster, D, D)) #self.variances self.n_cluster self.means
+            variances = np.zeros((self.n_cluster, D, D)) #self.variances self.n_cluster self.means
             for k in range(self.n_cluster):
-                xt = x[ymu == k,:] - self.means[k,:] 
-                self.variances[k, :, :] = np.dot(np.transpose(xt),xt) / np.sum(ymu==k) #self.variances 
+                xt = x[ymu == k,:] - means[k,:] 
+                variances[k, :, :] = np.dot(np.transpose(xt),xt) / np.sum(ymu==k) #self.variances
+            #print('variance', variances)
+            #print('pi_k', pi_k)
                        
             
             # DONOT MODIFY CODE BELOW THIS LINE
@@ -73,10 +75,10 @@ class GMM():
             #raise Exception(
             #    'Implement initialization of variances, means, pi_k randomly')
             
-            self.means = np.random.rand(self.n_cluster, D) # self.means self.n_cluster
-            self.pi_k = np.random.rand(self.n_cluster,) #self.pi_k self.n_cluster
+            means = np.random.rand(self.n_cluster, D) # self.means self.n_cluster
+            pi_k = np.random.rand(self.n_cluster,) #self.pi_k self.n_cluster
             randvar = np.random.rand(self.n_cluster, D, D)
-            self.variances = (randvar + np.transpose(randvar,(0,2,1))) / 2 #self.variances self.n_cluster
+            variances = (randvar + np.transpose(randvar,(0,2,1))) / 2 #self.variances self.n_cluster
 
             # DONOT MODIFY CODE BELOW THIS LINE
 
@@ -93,22 +95,34 @@ class GMM():
         #raise Exception('Implement fit function (filename: gmm.py)')
         
         #4
-        l = self.compute_log_likelihood(x, self.means, self.variances, self.pi_k)
-        gamma = np.zeros((N, self.n_cluster))
+        l = self.compute_log_likelihood(x, means, variances, pi_k)
+        #print('loglike', l)
+        
+        def compute_gamma(self, x, means, variances, pi_k):
+            gaus = [self.Gaussian_pdf(means[i], variances[i])
+                          for i in range(self.n_cluster)]
+            N, D = x.shape
+            gamma = np.zeros((N, self.n_cluster))
+            for i in range(N):
+                for j in range(self.n_cluster):
+                    gamma[i][j] = pi_k[j] * gaus[j].getLikelihood(x[i])
+            return gamma / np.sum(gamma, axis=1).reshape([-1, 1])
+        
         for itr in range(self.max_iter):
             #print("Iteration,", itr)
             #print('variances', self.variances[0,:,:])
             #print('means', self.means[0,:] )
             # 6 E step
+            """
             for n in range(N):
                 sumnorm = .0
                 normk = np.zeros(self.n_cluster)
                 for k in range(self.n_cluster):
                     gaus = self.Gaussian_pdf(
-                        self.means[k,:], self.variances[k,:]).getLikelihood(x[n,:])
+                        means[k,:], variances[k,:]).getLikelihood(x[n,:])
                     #if gaus ==0:
                     #    print('gaus is 0 when n, k', n , k)
-                    normk[k]= self.pi_k[k] * gaus
+                    normk[k]= pi_k[k] * gaus
                     if np.isnan(normk[k]) or normk[k]<1e-200 :
                         normk[k] = .0  
                 sumnorm = np.sum(normk)
@@ -117,6 +131,8 @@ class GMM():
                     gamma[n, :] = np.ones(gamma[n, :].shape).astype(float) /self.n_cluster
                 else:
                     gamma[n, :] = normk / sumnorm
+            """
+            gamma = compute_gamma(self, x, means, variances, pi_k)
             #print('min gamma', np.min(gamma))
             #print('gamma',gamma)
             #print('gamma -3 :', gamma[-3,:])
@@ -127,36 +143,38 @@ class GMM():
             Nk = np.sum(gamma, axis=0)
             #print('Nk',Nk)
             # eq.(6)
-            means2 = np.zeros(self.means.shape)
+            # eq.(7)
+            variances2 = np.zeros(variances.shape)
+            means2 = np.zeros(means.shape)
             for k in range(self.n_cluster):
                 means2[k, :] = np.sum(np.multiply(gamma[:, k].reshape(gamma.shape[0],1), x), axis=0)/Nk[k]
+                variances2[k] = (gamma[:, k].reshape([-1, 1]) * (x-means2[k])).T @ (x-means2[k])/Nk[k]
+            #    sumvark = np.zeros((D,D))
+            #    for n in range(N):
+            #        xmu = x[n, :] - means[k, :]
+            #        sumvark += gamma[n, k]*(np.dot(np.transpose(xmu), xmu))
+            #    variances2[k, :, :] = sumvark / Nk[k]
             
-            #print('means', means2[0,:])
-            #print('Eq6')
-            # eq.(7)
-            variances2 = np.zeros(self.variances.shape)
-            for k in range(self.n_cluster):
-                sumvark = np.zeros((D,D))
-                for n in range(N):
-                    xmu = x[n, :] - self.means[k, :]
-                    sumvark += gamma[n, k]*(np.dot(np.transpose(xmu), xmu))
-                variances2[k, :, :] = sumvark / Nk[k]
             #print(variances2[0, :, :])
             
             #print('Eq7')
             # eq.(8)
-            self.pi_k = Nk / N
-            self.means = means2
-            self.variances = variances2
-            #print('variances', self.variances)
+            pi_k = Nk / N
+            
+            means = means2
+            variances = variances2
+            #print('variances', variances)
             #print('Eq8')
-            l1 = self.compute_log_likelihood(x, self.means, self.variances, self.pi_k)
+            l1 = self.compute_log_likelihood(x, means, variances, pi_k)
             
             # stop condition
             if abs(l-l1) < self.e:
                 break
             l = l1
-            
+        
+        self.means = means
+        self.variances = variances
+        self.pi_k = pi_k
         return itr
         
         
@@ -218,7 +236,7 @@ class GMM():
         #raise Exception('Implement compute_log_likelihood function in gmm.py')
         
         N, D = x.shape
-        K = self.pi_k.shape[0]
+        K = pi_k.shape[0]
         '''
         log_likelihood = .0
         for n in range(N):
@@ -232,7 +250,7 @@ class GMM():
         '''
         log_likelihood = sum([np.log
                               (sum(
-                                  [self.pi_k[k] * self.Gaussian_pdf(self.means[k,:], self.variances[k,:]).getLikelihood(x[n,:]) 
+                                  [pi_k[k] * self.Gaussian_pdf(means[k,:], variances[k,:]).getLikelihood(x[n,:]) 
                                    for k in range(K)])) for n in range(N)])
         log_likelihood = log_likelihood.tolist()
 
@@ -260,15 +278,16 @@ class GMM():
             # DONOT MODIFY CODE ABOVE THIS LINE
             #raise Exception('Impliment Guassian_pdf __init__')
             
-            D = self.variance.shape[1] # self.variance
-            while np.linalg.matrix_rank(self.variance) != len(self.variance): # self.variance
+            D = variance.shape[0] # self.variance
+            while np.linalg.matrix_rank(variance) != D: # self.variance
                 #print('inverse')
                 #print(self.variance)
-                self.variance += 1e-3 * np.identity(len(self.variance)) # self.variance
-            self.inv = np.linalg.inv(self.variance) # self.variance self.inv
-            self.c = np.abs(((2*np.pi)**D) * np.linalg.det(self.variance)) # self.c self.variance
-            if self.c < 1e-100:
-                self.c = 1e-100
+                variance += 1e-3 * np.identity(D) # self.variance
+            self.inv = np.linalg.inv(variance) # self.variance self.inv
+            c = np.abs(((2*np.pi)**D) * np.linalg.det(variance)) # self.c self.variance
+            if c < 1e-100:
+                c = 1e-100
+            self.c = c
 
             # DONOT MODIFY CODE BELOW THIS LINE
 
