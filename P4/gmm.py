@@ -76,9 +76,15 @@ class GMM():
             #    'Implement initialization of variances, means, pi_k randomly')
             
             means = np.random.rand(self.n_cluster, D) # self.means self.n_cluster
-            pi_k = np.random.rand(self.n_cluster,) #self.pi_k self.n_cluster
-            randvar = np.random.rand(self.n_cluster, D, D)
-            variances = (randvar + np.transpose(randvar,(0,2,1))) / 2 #self.variances self.n_cluster
+            #pi_k = np.random.rand(self.n_cluster,) #self.pi_k self.n_cluster
+            #pi_k = pi_k / np.sum(pi_k)
+            #print('ini pi_k',pi_k)
+            #randvar = np.random.rand(self.n_cluster, D, D)
+            #variances = (randvar + np.transpose(randvar,(0,2,1))) / 2 #self.variances self.n_cluster
+            variances = np.zeros((self.n_cluster, D, D))
+            for i in range(self.n_cluster):
+                variances[i] = np.eye(D)
+            pi_k = np.ones((self.n_cluster))/self.n_cluster
 
             # DONOT MODIFY CODE BELOW THIS LINE
 
